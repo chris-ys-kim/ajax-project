@@ -37,6 +37,23 @@ body {
   align-items: stretch;
 }
 
+.button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.search-by {
+  background-color: #ffa500;
+  font-size: 1rem;
+  font-weight: bold;
+  border-style: none;
+  border-radius: 50px;
+  margin: 1rem 1rem;
+  padding: 1rem 2rem;
+  cursor: pointer;
+}
+
 .search-box {
   border: 1px solid;
   color: #ffa500;
@@ -188,4 +205,9 @@ body {
 .button {
   cursor: pointer;
   outline: 0;
+}
+
+.notFound {
+  grid-template-columns: 1fr !important;
+  color: #ffa500;
 }

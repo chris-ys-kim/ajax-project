@@ -7,7 +7,6 @@
   <title>AJAX Project</title>
   <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="css/reset.css">
-  <!-- <link rel="stylesheet" href="css/layout.css"> -->
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -20,8 +19,14 @@
         <hr>
         <h1 class="space">Find Meals For Your Ingredients</h1>
         <h7>"People who love to eat are always the best people"<br>-<i>Julia Child</i></h7>
+        <div class="button-container">
+          <button class="search-by ingredients">Ingredients</button>
+          <button class="search-by name">NAME</button>
+          <button class="search-by first">FIRST LETTER</button>
+          <button class="search-by random">RANDOM</button>
+        </div>
         <div class="meal-search-container">
-          <input type="text" class="search-box" placeholder="Search for a Meal..." id="search-input">
+          <input type="text" class="search-box" placeholder="Search by ingredient..." id="search-input">
           <button type="submit" class="search-btn" id="search-btn">
             <i class="fa fa-search"></i>
           </button>
