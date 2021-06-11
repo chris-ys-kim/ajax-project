@@ -2,26 +2,68 @@ var searchBtn = document.getElementById('search-btn');
 var mealList = document.getElementById('meal');
 var $mealContentDetails = document.querySelector('.meal-content-details');
 var recipeCloseBtn = document.getElementById('close-btn');
+var $searchBox = document.querySelector('.search-box');
 
-searchBtn.addEventListener('click', mealLists);
+var $ingredientButton = document.querySelector('.search-by.ingredient');
+var $nameButton = document.querySelector('.search-by.name');
+
+$ingredientButton.addEventListener('click', function (event) {
+  data.searchBy = 'random';
+  $searchBox.setAttribute('placeholder', 'Search by ingredient...');
+});
+
+$nameButton.addEventListener('click', function (event) {
+  data.searchBy = 'name';
+  $searchBox.setAttribute('placeholder', 'Search by name...');
+});
+
+searchBtn.addEventListener('click', function (event) {
+  if (data.searchBy === 'ingredients') {
+    mealListsIngredient();
+  }
+  if (data.searchBy === 'name') {
+    mealListsName();
+  }
+});
+
 mealList.addEventListener('click', recipeList);
 recipeCloseBtn.addEventListener('click', () => {
   $mealContentDetails.parentElement.classList.remove('showRecipe');
 });
 
-// function foodData() {
-//   var xhr = new XMLHttpRequest();
-//   xhr.open('GET', 'https://www.themealdb.com/api/json/v1/1/filter.php?i=chicken_breast' + name);
-//   xhr.responseType = 'json';
-//   xhr.send();
-//   xhr.addEventListener('load', function () {
-//     if(data.meals !== null) {
-//       $not
-//     }else{
-
-function mealLists() {
+function mealListsIngredient() {
   var searchInputTxt = document.getElementById('search-input').value.trim();
   fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchInputTxt}`)
+    .then(response => response.json())
+    .then(data => {
+      var html = '';
+      if (data.meals) {
+        data.meals.forEach(meal => {
+          html += `
+                    <div class="meal-item" data-id = "${meal.idMeal}">
+                    <div class="meal-img">
+                    <img src="${meal.strMealThumb}" alt="food">
+                    </div>
+                    <div class="meal-name">
+                    <h2>${meal.strMeal}</h2>
+                    <a href="#" class="recipe-btn">Get Recipe</a>
+                    </div>
+                    </div>
+                `;
+        });
+        mealList.classList.remove('notFound');
+      } else {
+        html = "Sorry, we didn't find any meal!";
+        mealList.classList.add('notFound');
+      }
+
+      mealList.innerHTML = html;
+    });
+}
+
+function mealListsName() {
+  var searchInputTxt = document.getElementById('search-input').value.trim();
+  fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInputTxt}`)
     .then(response => response.json())
     .then(data => {
       var html = '';
@@ -61,12 +103,21 @@ function recipeList(e) {
 
 function mealRecipeModal(meal) {
   meal = meal[0];
+  var recipe = '';
+  for (var i = 1; i <= 20; i++) {
+    var ingredientId = 'strIngredient' + i;
+    var measureId = 'strMeasure' + i;
+    if (meal[ingredientId] !== '' && meal[measureId] !== '') {
+      recipe += meal[ingredientId] + ' ' + meal[measureId] + ' & ';
+    }
+  }
+  recipe = recipe.slice(0, recipe.length - 3);
   var html = `
         <h2 class="recipe-title">${meal.strMeal}</h2>
           <p class="recipe-cat">${meal.strCategory}</p>
           <div class="recipe-inst">
           <h3>Ingredients</h3>
-            <p>${meal.strIngredient}</p>
+            <p>${recipe}</p>
           <h3>Instructions:</h3>
             <p>${meal.strInstructions}</p>
           </div>
