@@ -4,15 +4,10 @@ var $mealContentDetails = document.querySelector('.meal-content-details');
 var recipeCloseBtn = document.getElementById('close-btn');
 var $searchBox = document.querySelector('.search-box');
 
-var $ingredientButton = document.querySelector('.search-by.ingredient');
 var $nameButton = document.querySelector('.search-by.name');
 var $firstButton = document.querySelector('.search-by.first');
 var $randomButton = document.querySelector('.search-by.random');
-
-$ingredientButton.addEventListener('click', function (event) {
-  data.searchBy = 'random';
-  $searchBox.setAttribute('placeholder', 'Search by ingredient...');
-});
+var $ingredientButton = document.querySelector('.search-by.ingredients');
 
 $nameButton.addEventListener('click', function (event) {
   data.searchBy = 'name';
@@ -29,153 +24,19 @@ $randomButton.addEventListener('click', function (event) {
   $searchBox.setAttribute('placeholder', 'Search a random food');
 });
 
-searchBtn.addEventListener('click', function (event) {
-  if (data.searchBy === 'ingredients') {
-    mealListsIngredient();
-  }
-  if (data.searchBy === 'name') {
-    mealListsName();
-  }
-  if (data.searchBy === 'first') {
-    mealListsFirst();
-  }
-  if (data.searchBy === 'random') {
-    mealListsRandom();
-  }
+$ingredientButton.addEventListener('click', function (event) {
+  data.searchBy = 'random';
+  $searchBox.setAttribute('placeholder', 'Search by ingredients...');
 });
 
-function mealListsFirst() {
-  var searchInputTxt = document.getElementById('search-input').value.trim();
-  fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${searchInputTxt}`)
-    .then(response => response.json())
-    .then(data => {
-      var html = '';
-      if (data.meals) {
-        data.meals.forEach(meal => {
-          html += `
-                    <div class="meal-item" data-id = "${meal.idMeal}">
-                    <div class="meal-img">
-                    <img src="${meal.strMealThumb}" alt="food">
-                    </div>
-                    <div class="meal-name">
-                    <h2>${meal.strMeal}</h2>
-                    <a href="#" class="recipe-btn">Get Recipe</a>
-                    </div>
-                    </div>
-                `;
-        });
-        mealList.classList.remove('notFound');
-      } else {
-        html = "Sorry, we didn't find any meal!";
-        mealList.classList.add('notFound');
-      }
-
-      mealList.innerHTML = html;
-    });
-}
-
 searchBtn.addEventListener('click', function (event) {
-  if (data.searchBy === 'ingredients') {
-    mealListsIngredient();
-  }
-  if (data.searchBy === 'name') {
-    mealListsName();
-  }
+  mealListAll(data.searchBy);
 });
 
 mealList.addEventListener('click', recipeList);
 recipeCloseBtn.addEventListener('click', () => {
   $mealContentDetails.parentElement.classList.remove('showRecipe');
 });
-
-function mealListsIngredient() {
-  var searchInputTxt = document.getElementById('search-input').value.trim();
-  fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchInputTxt}`)
-    .then(response => response.json())
-    .then(data => {
-      var html = '';
-      if (data.meals) {
-        data.meals.forEach(meal => {
-          html += `
-                    <div class="meal-item" data-id = "${meal.idMeal}">
-                    <div class="meal-img">
-                    <img src="${meal.strMealThumb}" alt="food">
-                    </div>
-                    <div class="meal-name">
-                    <h2>${meal.strMeal}</h2>
-                    <a href="#" class="recipe-btn">Get Recipe</a>
-                    </div>
-                    </div>
-                `;
-        });
-        mealList.classList.remove('notFound');
-      } else {
-        html = "Sorry, we didn't find any meal!";
-        mealList.classList.add('notFound');
-      }
-
-      mealList.innerHTML = html;
-    });
-}
-
-function mealListsName() {
-  var searchInputTxt = document.getElementById('search-input').value.trim();
-  fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInputTxt}`)
-    .then(response => response.json())
-    .then(data => {
-      var html = '';
-      if (data.meals) {
-        data.meals.forEach(meal => {
-          html += `
-                    <div class="meal-item" data-id = "${meal.idMeal}">
-                    <div class="meal-img">
-                    <img src="${meal.strMealThumb}" alt="food">
-                    </div>
-                    <div class="meal-name">
-                    <h2>${meal.strMeal}</h2>
-                    <a href="#" class="recipe-btn">Get Recipe</a>
-                    </div>
-                    </div>
-                `;
-        });
-        mealList.classList.remove('notFound');
-      } else {
-        html = "Sorry, we didn't find any meal!";
-        mealList.classList.add('notFound');
-      }
-
-      mealList.innerHTML = html;
-    });
-}
-
-function mealListsRandom() {
-  fetch('https://www.themealdb.com/api/json/v1/1/random.php')
-    .then(response => response.json())
-    .then(data => {
-      var html = '';
-      if (data.meals) {
-        data.meals.forEach(meal => {
-          html += `
-                    <div class="meal-item" data-id = "${meal.idMeal}">
-                    <div class="meal-img">
-                    <img src="${meal.strMealThumb}" alt="food">
-                    </div>
-                    <div class="meal-name">
-                    <h2>${meal.strMeal}</h2>
-                    <a href="#" class="recipe-btn">Get Recipe</a>
-                    </div>
-                    </div>
-                `;
-        });
-        mealList.classList.remove('notFound');
-      } else {
-        html = "Sorry, we didn't find any meal!";
-        mealList.classList.add('notFound');
-      }
-
-      mealList.innerHTML = html;
-    });
-}
 
 function recipeList(e) {
   e.preventDefault();
@@ -216,4 +77,54 @@ function mealRecipeModal(meal) {
     `;
   $mealContentDetails.innerHTML = html;
   $mealContentDetails.parentElement.classList.add('showRecipe');
+}
+
+function mealListAll(dataSearchBy) {
+  var apiUrl;
+  var searchInputTxt;
+  switch (dataSearchBy) {
+    case 'ingredients':
+      searchInputTxt = document.getElementById('search-input').value.trim();
+      apiUrl = 'https://www.themealdb.com/api/json/v1/1/filter.php?i=' + searchInputTxt;
+      break;
+    case 'name':
+      searchInputTxt = document.getElementById('search-input').value.trim();
+      apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s=' + searchInputTxt;
+      break;
+    case 'first':
+      searchInputTxt = document.getElementById('search-input').value.trim();
+      apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?f=' + searchInputTxt;
+      break;
+    case 'random':
+      apiUrl = 'https://www.themealdb.com/api/json/v1/1/random.php';
+      break;
+    default:
+      return;
+  }
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      var html = '';
+      if (data.meals) {
+        data.meals.forEach(meal => {
+          html += `
+                    <div class="meal-item" data-id = "${meal.idMeal}">
+                    <div class="meal-img">
+                    <img src="${meal.strMealThumb}" alt="food">
+                    </div>
+                    <div class="meal-name">
+                    <h2>${meal.strMeal}</h2>
+                    <a href="#" class="recipe-btn">Get Recipe</a>
+                    </div>
+                    </div>
+                `;
+        });
+        mealList.classList.remove('notFound');
+      } else {
+        html = "Sorry, we didn't find any meal!";
+        mealList.classList.add('notFound');
+      }
+
+      mealList.innerHTML = html;
+    });
 }
