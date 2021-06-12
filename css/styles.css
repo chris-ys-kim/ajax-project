@@ -9,6 +9,14 @@ body {
   font-size: 1rem;
 }
 
+.hidden {
+  display: none;
+}
+
+.noFood {
+  margin-top: 2rem;
+}
+
 .main-title {
   margin-bottom: 1rem;
   margin-top: 1rem;
@@ -19,6 +27,18 @@ body {
 .container {
   min-height: 100vh;
 }
+
+.text-center {
+  text-align: center;
+}
+
+/* .flex {
+  display: flex;
+}
+
+.justify-content {
+  justify-content: center;
+} */
 
 .meal-container {
   text-align: center;
@@ -52,6 +72,10 @@ body {
   margin: 1rem 1rem;
   padding: 1rem 2rem;
   cursor: pointer;
+}
+
+.search-by:focus {
+  outline: none;
 }
 
 .search-box {
@@ -205,9 +229,4 @@ body {
 .button {
   cursor: pointer;
   outline: 0;
-}
-
-.notFound {
-  grid-template-columns: 1fr !important;
-  color: #ffa500;
 }

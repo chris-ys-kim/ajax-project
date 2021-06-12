@@ -3,6 +3,7 @@ var mealList = document.getElementById('meal');
 var $mealContentDetails = document.querySelector('.meal-content-details');
 var recipeCloseBtn = document.getElementById('close-btn');
 var $searchBox = document.querySelector('.search-box');
+var $noFood = document.querySelector('.noFood');
 
 var $nameButton = document.querySelector('.search-by.name');
 var $firstButton = document.querySelector('.search-by.first');
@@ -21,33 +22,48 @@ $firstButton.addEventListener('click', function (event) {
 
 $randomButton.addEventListener('click', function (event) {
   data.searchBy = 'random';
-  $searchBox.setAttribute('placeholder', 'Search a random food');
+  mealListAll(data.searchBy);
 });
 
 $ingredientButton.addEventListener('click', function (event) {
-  data.searchBy = 'random';
-  $searchBox.setAttribute('placeholder', 'Search by ingredients...');
+  data.searchBy = 'ingredients';
 });
 
 searchBtn.addEventListener('click', function (event) {
+  var count = mealList.childElementCount;
+  for (var i = 0; i < count; i++) {
+    var child = mealList.firstElementChild;
+    mealList.removeChild(child);
+  }
+  $noFood.classList.add('hidden');
   mealListAll(data.searchBy);
 });
 
 mealList.addEventListener('click', recipeList);
+
 recipeCloseBtn.addEventListener('click', () => {
+  var count = $mealContentDetails.childElementCount;
+  for (var i = 0; i < count; i++) {
+    var child = $mealContentDetails.firstElementChild;
+    $mealContentDetails.removeChild(child);
+  }
   $mealContentDetails.parentElement.classList.remove('showRecipe');
 });
 
 function recipeList(e) {
   e.preventDefault();
   if (e.target.classList.contains('recipe-btn')) {
+    var count = $mealContentDetails.childElementCount;
+    for (var i = 0; i < count; i++) {
+      var child = $mealContentDetails.firstElementChild;
+      $mealContentDetails.removeChild(child);
+    }
     var mealItem = e.target.parentElement.parentElement;
     fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
       .then(res => res.json())
       .then(data => mealRecipeModal(data.meals));
   }
 }
-
 function mealRecipeModal(meal) {
   meal = meal[0];
   var recipe = '';
@@ -59,23 +75,57 @@ function mealRecipeModal(meal) {
     }
   }
   recipe = recipe.slice(0, recipe.length - 3);
-  var html = `
-        <h2 class="recipe-title">${meal.strMeal}</h2>
-          <p class="recipe-cat">${meal.strCategory}</p>
-          <div class="recipe-inst">
-          <h3>Ingredients</h3>
-            <p>${recipe}</p>
-          <h3>Instructions:</h3>
-            <p>${meal.strInstructions}</p>
-          </div>
-          <div class="recipe-img">
-            <img src="${meal.strMealThumb}" alt="">
-          </div>
-          <div class="recipe-link">
-            <a href="${meal.strYoutube}" target="_blank">Watch Video</a>
-          </div>
-    `;
-  $mealContentDetails.innerHTML = html;
+
+  var $h2 = document.createElement('h2');
+  $h2.className = 'recipe-title';
+  $h2.textContent = meal.strMeal;
+
+  var $firstP = document.createElement('p');
+  $firstP.className = 'recipe-cat';
+  $firstP.textContent = meal.strCategory;
+
+  var $firstDiv = document.createElement('div');
+  $firstDiv.className = 'recipe-inst';
+
+  var $firstH3 = document.createElement('h3');
+  $firstH3.textContent = 'Ingredients';
+  $firstDiv.appendChild($firstH3);
+
+  var $secondP = document.createElement('p');
+  $secondP.textContent = recipe;
+  $firstDiv.appendChild($secondP);
+
+  var $secondH3 = document.createElement('h3');
+  $secondH3.textContent = 'Instructions';
+  $firstDiv.appendChild($secondH3);
+
+  var $thirdP = document.createElement('p');
+  $thirdP.textContent = meal.strInstructions;
+  $firstDiv.appendChild($thirdP);
+
+  var $secondDiv = document.createElement('div');
+  $secondDiv.className = 'recipe-img';
+
+  var $image = document.createElement('img');
+  $image.setAttribute('src', meal.strMealThumb);
+  $image.setAttribute('alt', '');
+  $secondDiv.appendChild($image);
+
+  var $thirdDiv = document.createElement('div');
+  $thirdDiv.className = 'recipe-link';
+
+  var $a = document.createElement('a');
+  $a.setAttribute('href', meal.strYoutube);
+  $a.setAttribute('target', '_blank');
+  $a.textContent = 'Watch Video';
+  $thirdDiv.appendChild($a);
+
+  $mealContentDetails.appendChild($h2);
+  $mealContentDetails.appendChild($firstP);
+  $mealContentDetails.appendChild($firstDiv);
+  $mealContentDetails.appendChild($secondDiv);
+  $mealContentDetails.appendChild($thirdDiv);
+
   $mealContentDetails.parentElement.classList.add('showRecipe');
 }
 
@@ -104,27 +154,39 @@ function mealListAll(dataSearchBy) {
   fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
-      var html = '';
       if (data.meals) {
-        data.meals.forEach(meal => {
-          html += `
-                    <div class="meal-item" data-id = "${meal.idMeal}">
-                    <div class="meal-img">
-                    <img src="${meal.strMealThumb}" alt="food">
-                    </div>
-                    <div class="meal-name">
-                    <h2>${meal.strMeal}</h2>
-                    <a href="#" class="recipe-btn">Get Recipe</a>
-                    </div>
-                    </div>
-                `;
-        });
-        mealList.classList.remove('notFound');
-      } else {
-        html = "Sorry, we didn't find any meal!";
-        mealList.classList.add('notFound');
-      }
+        for (var meal of data.meals) {
+          var $firstDiv = document.createElement('div');
+          $firstDiv.className = 'meal-item';
+          $firstDiv.setAttribute('data-id', meal.idMeal);
 
-      mealList.innerHTML = html;
+          var $secondDiv = document.createElement('div');
+          $secondDiv.className = 'meal-img';
+          $firstDiv.appendChild($secondDiv);
+
+          var $image = document.createElement('img');
+          $image.setAttribute('src', meal.strMealThumb);
+          $image.setAttribute('alt', 'food');
+          $secondDiv.appendChild($image);
+
+          var $thirdDiv = document.createElement('div');
+          $thirdDiv.className = 'meal-name';
+          $firstDiv.appendChild($thirdDiv);
+
+          var $h2 = document.createElement('h2');
+          $h2.textContent = meal.strMeal;
+          $thirdDiv.appendChild($h2);
+
+          var $a = document.createElement('a');
+          $a.className = 'recipe-btn';
+          $a.textContent = 'Get Recipe';
+          $a.setAttribute('href', '#');
+          $thirdDiv.appendChild($a);
+
+          mealList.appendChild($firstDiv);
+        }
+      } else {
+        $noFood.classList.remove('hidden');
+      }
     });
 }
