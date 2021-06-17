@@ -22,6 +22,7 @@ $firstButton.addEventListener('click', function (event) {
 
 $randomButton.addEventListener('click', function (event) {
   data.searchBy = 'random';
+  $randomButton.setAttribute('placeholder', 'Search by random...');
   mealListAll(data.searchBy);
 });
 
