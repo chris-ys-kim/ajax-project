@@ -27,14 +27,19 @@ $randomButton.addEventListener('click', function (event) {
 
 $ingredientButton.addEventListener('click', function (event) {
   data.searchBy = 'ingredients';
+  $searchBox.setAttribute('placeholder', 'Search by ingredients...');
 });
 
-searchBtn.addEventListener('click', function (event) {
-  var count = mealList.childElementCount;
+function removeChild(element) {
+  var count = element.childElementCount;
   for (var i = 0; i < count; i++) {
-    var child = mealList.firstElementChild;
-    mealList.removeChild(child);
+    var child = element.firstElementChild;
+    element.removeChild(child);
   }
+}
+
+searchBtn.addEventListener('click', function (event) {
+  removeChild(mealList);
   $noFood.classList.add('hidden');
   mealListAll(data.searchBy);
 });
@@ -42,38 +47,39 @@ searchBtn.addEventListener('click', function (event) {
 mealList.addEventListener('click', recipeList);
 
 recipeCloseBtn.addEventListener('click', () => {
-  var count = $mealContentDetails.childElementCount;
-  for (var i = 0; i < count; i++) {
-    var child = $mealContentDetails.firstElementChild;
-    $mealContentDetails.removeChild(child);
-  }
+  // var count = $mealContentDetails.childElementCount;
+  // for (var i = 0; i < count; i++) {
+  //   var child = $mealContentDetails.firstElementChild;
+  //   $mealContentDetails.removeChild(child);
+  // }
   $mealContentDetails.parentElement.classList.remove('showRecipe');
 });
 
 function recipeList(e) {
   e.preventDefault();
   if (e.target.classList.contains('recipe-btn')) {
-    var count = $mealContentDetails.childElementCount;
-    for (var i = 0; i < count; i++) {
-      var child = $mealContentDetails.firstElementChild;
-      $mealContentDetails.removeChild(child);
-    }
+    removeChild($mealContentDetails);
     var mealItem = e.target.parentElement.parentElement;
     fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
-      .then(res => res.json())
+      .then(response => response.json())
       .then(data => mealRecipeModal(data.meals));
   }
 }
+
 function mealRecipeModal(meal) {
   meal = meal[0];
   var recipe = '';
   for (var i = 1; i <= 20; i++) {
     var ingredientId = 'strIngredient' + i;
     var measureId = 'strMeasure' + i;
+    if (meal[ingredientId] === null || meal[measureId] === null) {
+      break;
+    }
     if (meal[ingredientId] !== '' && meal[measureId] !== '') {
       recipe += meal[ingredientId] + ' ' + meal[measureId] + ' & ';
     }
   }
+
   recipe = recipe.slice(0, recipe.length - 3);
 
   var $h2 = document.createElement('h2');
@@ -131,18 +137,15 @@ function mealRecipeModal(meal) {
 
 function mealListAll(dataSearchBy) {
   var apiUrl;
-  var searchInputTxt;
+  var searchInputTxt = document.getElementById('search-input').value.trim();
   switch (dataSearchBy) {
     case 'ingredients':
-      searchInputTxt = document.getElementById('search-input').value.trim();
       apiUrl = 'https://www.themealdb.com/api/json/v1/1/filter.php?i=' + searchInputTxt;
       break;
     case 'name':
-      searchInputTxt = document.getElementById('search-input').value.trim();
       apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s=' + searchInputTxt;
       break;
     case 'first':
-      searchInputTxt = document.getElementById('search-input').value.trim();
       apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?f=' + searchInputTxt;
       break;
     case 'random':
