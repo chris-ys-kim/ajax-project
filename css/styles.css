@@ -70,10 +70,8 @@ body {
 
 .search-by:focus {
   outline: none;
-}
-
-.search-by:hover {
   background-color: darkorange;
+  color: black;
 }
 
 .search-box {
@@ -108,6 +106,7 @@ body {
   font-size: 30px;
   cursor: pointer;
   transition: 0.3s;
+  outline: none;
 }
 
 .search-btn:hover {
@@ -152,7 +151,7 @@ body {
   display: inline-block;
 }
 
-.recipe-btn:hover {
+.recipe-btn:focus {
   background-color: darkorange;
 }
 
@@ -197,8 +196,10 @@ body {
 }
 
 .close-btn {
-  position: absolute;
+  position: sticky;
   right: 1rem;
+  float: right;
+  margin-top: 2rem;
   top: 1rem;
   font-size: 1.5rem;
   border: none;

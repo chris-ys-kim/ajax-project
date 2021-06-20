@@ -22,8 +22,7 @@ $firstButton.addEventListener('click', function (event) {
 
 $randomButton.addEventListener('click', function (event) {
   data.searchBy = 'random';
-  $randomButton.setAttribute('placeholder', 'Search by random...');
-  mealListAll(data.searchBy);
+  $searchBox.setAttribute('placeholder', 'Search by random...');
 });
 
 $ingredientButton.addEventListener('click', function (event) {
@@ -38,6 +37,14 @@ function removeChild(element) {
     element.removeChild(child);
   }
 }
+
+window.addEventListener('keydown', function (e) {
+  if (e.which === 13) {
+    removeChild(mealList);
+    $noFood.classList.add('hidden');
+    mealListAll(data.searchBy);
+  }
+});
 
 searchBtn.addEventListener('click', function (event) {
   removeChild(mealList);
@@ -68,6 +75,7 @@ function recipeList(e) {
 }
 
 function mealRecipeModal(meal) {
+  var instructions = meal[0].strInstructions.split('. ');
   meal = meal[0];
   var recipe = '';
   for (var i = 1; i <= 20; i++) {
@@ -106,9 +114,15 @@ function mealRecipeModal(meal) {
   $secondH3.textContent = 'Instructions';
   $firstDiv.appendChild($secondH3);
 
-  var $thirdP = document.createElement('p');
-  $thirdP.textContent = meal.strInstructions;
-  $firstDiv.appendChild($thirdP);
+  // var $thirdP = document.createElement('p');
+  // $thirdP.textContent = meal.strInstructions;
+  // $firstDiv.appendChild($thirdP);
+
+  for (var j = 0; j < instructions.length; ++j) {
+    var $thirdP = document.createElement('li');
+    $thirdP.textContent = instructions[j];
+    $firstDiv.appendChild($thirdP);
+  }
 
   var $secondDiv = document.createElement('div');
   $secondDiv.className = 'recipe-img';
