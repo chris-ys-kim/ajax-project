@@ -71,25 +71,30 @@ function recipeList(e) {
     fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
       .then(response => response.json())
       .then(data => mealRecipeModal(data.meals));
+
   }
 }
 
-function mealRecipeModal(meal) {
-  var instructions = meal[0].strInstructions.split('. ');
+function prepareList(ul, meal) {
   meal = meal[0];
   var recipe = '';
   for (var i = 1; i <= 20; i++) {
     var ingredientId = 'strIngredient' + i;
     var measureId = 'strMeasure' + i;
+    var list = document.createElement('li');
     if (meal[ingredientId] === null || meal[measureId] === null) {
       break;
     }
     if (meal[ingredientId] !== '' && meal[measureId] !== '') {
-      recipe += meal[ingredientId] + ' ' + meal[measureId] + ' & ';
+      recipe = meal[ingredientId] + ' ' + meal[measureId];
+      list.textContent = recipe;
+      ul.appendChild(list);
     }
   }
+}
 
-  recipe = recipe.slice(0, recipe.length - 3);
+function mealRecipeModal(meal) {
+  var instructions = meal[0].strInstructions.split('. ');
 
   var $h2 = document.createElement('h2');
   $h2.className = 'recipe-title';
@@ -106,9 +111,11 @@ function mealRecipeModal(meal) {
   $firstH3.textContent = 'Ingredients';
   $firstDiv.appendChild($firstH3);
 
-  var $secondP = document.createElement('p');
-  $secondP.textContent = recipe;
-  $firstDiv.appendChild($secondP);
+  var ul = document.createElement('ul');
+  $firstDiv.appendChild(ul);
+
+  prepareList(ul, meal);
+  meal = meal[0];
 
   var $secondH3 = document.createElement('h3');
   $secondH3.textContent = 'Instructions';
@@ -118,7 +125,7 @@ function mealRecipeModal(meal) {
   // $thirdP.textContent = meal.strInstructions;
   // $firstDiv.appendChild($thirdP);
 
-  for (var j = 0; j < instructions.length; ++j) {
+  for (var j = 0; j < instructions.length; j++) {
     var $thirdP = document.createElement('li');
     $thirdP.textContent = instructions[j];
     $firstDiv.appendChild($thirdP);
